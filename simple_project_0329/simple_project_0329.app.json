@@ -1,0 +1,100 @@
+{
+    "name": "simple_project_0329",
+    "modules": [
+      "engine_tcp_udp",
+      "//apps/simple_project_0329:simple_components",
+      "sight"
+    ],
+    "graph": {
+        "nodes": [
+            {
+                "name": "interface",
+                "components": [
+                    {
+                        "name": "message_ledger",
+                        "type": "isaac::alice::MessageLedger"
+                    },
+                    {
+                        "name": "output",
+                        "type": "isaac::alice::TcpPublisher"
+                    },
+                    {
+                        "name": "input",
+                        "type": "isaac::alice::TcpSubscriber"
+                    },
+                    {
+                        "name": "time_sync",
+                        "type": "isaac::alice::TimeSynchronizer"
+                    }
+                ]
+            },
+            {
+                "name": "main",
+                "components": [
+                    {
+                        "name": "message_ledger",
+                        "type": "isaac::alice::MessageLedger"
+                    },
+                    {
+                        "name": "simple_app",
+                        "type": "isaac::SimpleApp"
+                    }
+                ]
+            },
+            {
+                "name": "control",
+                "components": [
+                    {
+                        "name": "message_ledger",
+                        "type": "isaac::alice::MessageLedger"
+                    },
+                    {
+                        "name": "simple_control",
+                        "type": "isaac::SimpleControl"
+                    }
+                ]
+            }
+        ],
+        "edges": [
+            {
+                "source": "main/simple_app/outgoing_torque",
+                "target": "interface/output/incoming_torque"
+            },
+            {
+                "source": "interface/input/outgoing_target",
+                "target": "main/simple_app/incoming_target"
+            },
+            {
+                "source": "main/simple_app/outgoing_target",
+                "target": "control/simple_control/incoming_target"
+            },
+            {
+                "source": "control/simple_control/outgoing_torque",
+                "target": "main/simple_app/incoming_torque"
+            },
+            {
+                "source": "interface/input/bodies",
+                "target": "main/simple_app/incoming_bodies"
+            },
+            {
+                "source" : "main/simple_app/outgoing_bodies",
+                "target" : "control/simple_control/incoming_bodies"
+            },
+            {
+                "source" : "interface/input/outgoing_current_speed",
+                "target" : "control/simple_control/incoming_current_speed"
+            }
+        ]
+    },
+    "config": {
+        "interface": {
+            "output": {
+                "port": 55001
+            },
+            "input": {
+                "port": 55000,
+                "host": "localhost"
+            }
+        }
+    }
+}
